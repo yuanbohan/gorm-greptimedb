@@ -34,3 +34,9 @@ func (p *Postgres) Setup() error {
 	p.DB = db
 	return nil
 }
+
+func (p *Postgres) AllMonitors() ([]Monitor, error) {
+	var monitors []Monitor
+	err := p.DB.Find(&monitors).Error
+	return monitors, err
+}

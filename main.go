@@ -13,10 +13,16 @@ var (
 
 func init() {
 	greptimedb = &db.Greptime{
-		Host: "127.0.0.1",
-		Port: "4001",
+		Host:     "127.0.0.1",
+		Port:     "4001",
+		User:     "",
+		Password: "",
+		Database: "public",
 	}
-	greptimedb.Setup()
+	err := greptimedb.Setup()
+	if err != nil {
+		panic(err)
+	}
 
 	pg = &db.Postgres{
 		Host:     "127.0.0.1",
@@ -25,9 +31,22 @@ func init() {
 		Password: "",
 		Database: "public",
 	}
-	pg.Setup()
+	err = pg.Setup()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
-	fmt.Println("hello")
+	if err := greptimedb.Insert(); err != nil {
+		panic(err)
+	} else {
+		fmt.Println("insert success")
+	}
+
+	if all, err := pg.AllMonitors(); err != nil {
+		panic(err)
+	} else {
+		fmt.Println(all)
+	}
 }

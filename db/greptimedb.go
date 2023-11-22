@@ -1,7 +1,10 @@
 package db
 
 import (
+	"context"
+	"fmt"
 	"strconv"
+	"time"
 
 	gc "github.com/GreptimeTeam/greptimedb-client-go"
 	"google.golang.org/grpc"
@@ -9,10 +12,11 @@ import (
 )
 
 type Greptime struct {
-	Host     string // 127.0.0.1
-	Port     string // 4001
+	Host     string // default is 127.0.0.1
+	Port     string // default is 4001
 	User     string
 	Password string
+	Database string // default is public
 
 	Client gc.Client
 }
@@ -23,6 +27,7 @@ func (g *Greptime) Setup() error {
 	}
 
 	cfg := gc.NewCfg(g.Host).
+		WithDatabase(g.Database).
 		WithAuth(g.User, g.Password).
 		WithDialOptions(options...)
 
@@ -41,4 +46,38 @@ func (g *Greptime) Setup() error {
 
 	g.Client = *cli
 	return nil
+}
+
+func (g *Greptime) Insert() error {
+	table := "monitor"
+	monitor := Monitor{
+		ID:          time.Now().UnixMicro(),
+		Host:        "127.0.0.1",
+		Ts:          time.Now(),
+		Memory:      21,
+		Cpu:         0.81,
+		Temperature: 21,
+	}
+
+	series := gc.Series{}
+	series.AddTag("id", monitor.ID)
+	series.AddField("host", monitor.Host)
+	series.AddField("memory", monitor.Memory)
+	series.AddField("cpu", monitor.Cpu)
+	series.AddField("temperature", monitor.Temperature)
+	series.SetTimestamp(monitor.Ts)
+
+	metric := gc.Metric{}
+	metric.SetTimePrecision(time.Microsecond)
+	metric.SetTimestampAlias("ts")
+	metric.AddSeries(series)
+
+	req := gc.InsertRequest{}
+	req.WithTable(table).WithMetric(metric)
+	reqs := gc.InsertsRequest{}
+	reqs.Append(req)
+
+	resp, err := g.Client.Insert(context.Background(), reqs)
+	fmt.Println(resp)
+	return err
 }
