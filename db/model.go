@@ -10,3 +10,7 @@ type Monitor struct {
 	Temperature int64     `gorm:"column:temperature"`
 	Ts          time.Time `gorm:"column:ts"`
 }
+
+func (Monitor) TableName() string {
+	return "monitor"
+}

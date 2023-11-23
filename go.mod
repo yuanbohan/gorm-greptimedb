@@ -5,6 +5,7 @@ go 1.21.4
 require (
 	github.com/GreptimeTeam/greptimedb-client-go v0.1.2
 	google.golang.org/grpc v1.59.0
+	gorm.io/driver/mysql v1.5.2
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 )
@@ -13,6 +14,7 @@ require (
 	github.com/GreptimeTeam/greptime-proto v0.4.0 // indirect
 	github.com/apache/arrow/go/v13 v13.0.0 // indirect
 	github.com/bits-and-blooms/bitset v1.11.0 // indirect
+	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/flatbuffers v23.5.26+incompatible // indirect
